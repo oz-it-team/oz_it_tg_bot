@@ -12,7 +12,7 @@ bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 def say_welcome(message):
     bot.send_message(message.chat.id,
                      'Hi, there!.\n'
-                     'Мой код [тут](https://github.com/orgs/oz-it-team/repositories)',
+                     'Мой код [тут](https://github.com/oz-it-team/oz_it_tg_bot)',
                      parse_mode='markdown')
 
 
@@ -22,13 +22,19 @@ def test(message):
     bot.send_message(message.chat.id, "test")
 
 
-# All message
+# If message send to private chat
+@bot.message_handler(func=lambda message: message.chat.type == "private")
+def get_private_message(message):
+    bot.send_message(message.chat.id, get_answer(message.text))
+
+
+# All other message
 @bot.message_handler(func=lambda message: True)
 def echo(message):
     print(message.text)
     random_int = random.randint(1, 5)
     if random_int == 1:
-        bot.send_message(message.chat.id, get_answer(message.text))
+        bot.reply_to(message.chat.id, get_answer(message.text))
 
 
 def get_answer(text):
