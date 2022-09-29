@@ -1,0 +1,17 @@
+name: Deploy Serverless function
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: goodsmileduck/yandex-serverless-action@v2
+      with:
+        token: ${{ secrets.YC_TOKEN }}
+        function_id: 'd4e97t2k0851vlo48s7f'
+        runtime: 'python39'
+        entrypoint: 'index.handler'
