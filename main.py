@@ -40,7 +40,7 @@ def echo(message):
     print(message.text)
     if is_reply_to_bot(message):
         bot.reply_to(message, get_answer(message.text))
-    elif random.randint(1, 5) == 1:
+    elif random.randint(1, 15) == 1:
         bot.reply_to(message, get_answer(message.text))
 
 
