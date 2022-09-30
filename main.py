@@ -33,8 +33,9 @@ def get_private_message(message):
 def echo(message):
     print(message.text)
     random_int = random.randint(1, 5)
+    print(random_int)
     if random_int == 1:
-        bot.reply_to(message.chat.id, get_answer(message.text))
+        bot.reply_to(message, get_answer(message.text))
 
 
 def get_answer(text):
