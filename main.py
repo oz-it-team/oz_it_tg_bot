@@ -22,6 +22,11 @@ def test(message):
     bot.send_message(message.chat.id, "test")
 
 
+# Command TEST for ci cd
+@bot.message_handler(commands=['bot-test-cicd'])
+def test(message):
+    bot.send_message(message.chat.id, "test cicd")
+
 # If message send to private chat
 @bot.message_handler(func=lambda message: message.chat.type == "private")
 def get_private_message(message):
