@@ -27,6 +27,7 @@ def test(message):
 def test(message):
     bot.send_message(message.chat.id, "test cicd")
 
+
 # If message send to private chat
 @bot.message_handler(func=lambda message: message.chat.type == "private")
 def get_private_message(message):
@@ -37,10 +38,14 @@ def get_private_message(message):
 @bot.message_handler(func=lambda message: True)
 def echo(message):
     print(message.text)
-    random_int = random.randint(1, 5)
-    print(random_int)
-    if random_int == 1:
+    if is_reply_to_bot(message):
         bot.reply_to(message, get_answer(message.text))
+    elif random.randint(1, 5) == 1:
+        bot.reply_to(message, get_answer(message.text))
+
+
+def is_reply_to_bot(message):
+    return getattr(getattr(getattr(message, 'reply_to_message', {}), 'from_user', {}), 'is_bot', False)
 
 
 def get_answer(text):
