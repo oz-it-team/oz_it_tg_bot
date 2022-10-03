@@ -9,16 +9,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Download yndex cli.
-        run: |
-          curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
-          source /home/runner/.bashrc
-          echo 'source /home/runner/yandex-cloud/completion.zsh.inc' >>  ~/.zshrc
-          yc config set token $YC_TOKEN
-          yc serverless function list --folder-id b1gpsj5819li8fb1mhf6
-      - name: Push new version...
-        run: |
-          yc serverless function version create --function-id d4embv1v0mueqj7nc5ev \
-            --runtime python39 \
-            --entrypoint index.handler \
-            --memory 128m
+    - uses: actions/checkout@master
+    - uses: goodsmileduck/yandex-serverless-action@v2
+      with:
+        token: ${{ secrets.YC_TOKEN }}
+        function_id: 'd4e97t2k0851vlo48s7f'
+        runtime: 'python39'
+        memory: '128'
+        entrypoint: 'index.handler'
+        source: '.'
