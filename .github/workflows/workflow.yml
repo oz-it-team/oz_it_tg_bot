@@ -10,16 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download yndex cli.
-        run: curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
-      - name: set cli.
         run: |
+          curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
           source /home/runner/.bashrc
           yc config set token $YC_TOKEN
           yc serverless function list --folder-id b1gpsj5819li8fb1mhf6
-      - name: Set yndex cli config
-        run: yc config set token $YC_TOKEN
-      - name: Get list
-        run: yc serverless function list --folder-id b1gpsj5819li8fb1mhf6
       - name: Push new version...
         run: |
           yc serverless function version create --function-id d4embv1v0mueqj7nc5ev \
