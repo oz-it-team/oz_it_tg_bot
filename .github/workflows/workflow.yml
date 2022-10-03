@@ -17,4 +17,5 @@ jobs:
         runtime: 'python39'
         memory: '128'
         entrypoint: 'index.handler'
+        environment: TEST=test
         source: '.'
