@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Download yndex cli.
         run: curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+      - name: set cli.
+        run: source "/root/.bashrc"
       - name: Set yndex cli config
         run: yc config set token $YC_TOKEN
       - name: Get list
