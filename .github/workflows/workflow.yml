@@ -12,8 +12,10 @@ jobs:
       - name: Download yndex cli.
         run: curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
       - name: set cli.
-        run: source /home/runner/.bashrc
-             yc config set token $YC_TOKEN
+        run: |
+          source /home/runner/.bashrc
+          yc config set token $YC_TOKEN
+          yc serverless function list --folder-id b1gpsj5819li8fb1mhf6
       - name: Set yndex cli config
         run: yc config set token $YC_TOKEN
       - name: Get list
