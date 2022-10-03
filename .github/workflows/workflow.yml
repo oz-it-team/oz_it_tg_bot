@@ -13,6 +13,7 @@ jobs:
         run: |
           curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
           source /home/runner/.bashrc
+          echo 'source /home/runner/yandex-cloud/completion.zsh.inc' >>  ~/.zshrc
           yc config set token $YC_TOKEN
           yc serverless function list --folder-id b1gpsj5819li8fb1mhf6
       - name: Push new version...
