@@ -13,6 +13,7 @@ jobs:
         run: curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
       - name: set cli.
         run: source /home/runner/.bashrc
+             yc config set token $YC_TOKEN
       - name: Set yndex cli config
         run: yc config set token $YC_TOKEN
       - name: Get list
