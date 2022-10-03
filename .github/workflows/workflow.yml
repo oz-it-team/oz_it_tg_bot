@@ -14,4 +14,7 @@ jobs:
         token: ${{ secrets.YC_TOKEN }}
         function_id: 'd4e97t2k0851vlo48s7f'
         runtime: 'python39'
+        memory: '128'
         entrypoint: 'index.handler'
+        environment: BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+        source: '.'
