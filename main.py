@@ -6,7 +6,7 @@ import json
 import openai
 
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 
 # Command START & HELP
@@ -43,13 +43,13 @@ def get_private_message(message):
     bot.send_message(message.chat.id, get_answer(message.text))
 
 
-# All other message
+# All others message
 @bot.message_handler(func=lambda message: True)
 def echo(message):
     print(message.text)
     if is_reply_to_bot(message):
         bot.reply_to(message, get_answer(message.text))
-    elif random.randint(1, 5) == 1:
+    elif random.randint(1, 50) == 1:
         bot.reply_to(message, get_answer(message.text))
 
 
@@ -79,9 +79,10 @@ def get_answer(text):
 
     return response[2:len(response) - 2]
 
+
 def get_openapi_response(text):
     response = openai.Completion.create(
-        model="text-davinci-003",
+        model='text-davinci-003',
         prompt=text,
         temperature=0,
         max_tokens=200,
