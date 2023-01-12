@@ -3,8 +3,10 @@ import random
 import requests
 import telebot
 import json
+import openai
 
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 
 # Command START & HELP
@@ -26,6 +28,13 @@ def test(message):
 @bot.message_handler(commands=['bot-test-cicd'])
 def test(message):
     bot.send_message(message.chat.id, "test cicd")
+
+
+# Command OPENAI QA
+@bot.message_handler(commands=['openai_qa'])
+def send_openai_response_to_bot(message):
+    # .partition('/openai_qa ')[2] - вырезаем команду от tg из запроса
+    bot.reply_to(message, get_openapi_response(message.text.partition('/openai_qa ')[2]))
 
 
 # If message send to private chat
@@ -70,6 +79,20 @@ def get_answer(text):
 
     return response[2:len(response) - 2]
 
+
+def get_openapi_response(text):
+    response = openai.Completion.create(
+        model='text-davinci-003',
+        prompt=text,
+        temperature=0,
+        max_tokens=200,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+        #stop=["\n"]
+    )
+
+    return response.choices[0].text
 
 # For local testing only
 if __name__ == '__main__':
