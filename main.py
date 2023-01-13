@@ -20,7 +20,7 @@ openai.api_key = os.environ.get('OPENAI_API_KEY')
 stability_api = client.StabilityInference(
     key = os.environ.get('STABILITY_API_KEY'),
     verbose = True,
-    engine = "stable-diffusion-512-v2-1",
+    engine = "stable-diffusion-v1-5",
 )
 
 
@@ -117,9 +117,9 @@ def get_openapi_response(text):
 def get_image_response(text):
     answers = stability_api.generate(
         prompt=text,
-        seed=992446758,
-        steps=30,
-        cfg_scale=8.0,
+        seed='',
+        steps=80,
+        cfg_scale=10.0,
         width=512,
         height=512,
         samples=1,
