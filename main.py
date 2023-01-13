@@ -20,7 +20,7 @@ openai.api_key = os.environ.get('OPENAI_API_KEY')
 stability_api = client.StabilityInference(
     key = os.environ.get('STABILITY_API_KEY'),
     verbose = True,
-    engine = "stable-diffusion-v1-5",
+    engine = "stable-diffusion-512-v2-1",
 )
 
 
@@ -52,7 +52,7 @@ def send_generated_image_to_bot(message):
     query = message.text.partition('/generate_image ')[2]
     img = get_image_response(query)
 
-    bot.reply_to(message, query)
+    bot.reply_to(message, "Лови 🎨")
     bot.send_photo(message.chat.id, img)
 
 
@@ -118,8 +118,8 @@ def get_image_response(text):
     answers = stability_api.generate(
         prompt=text,
         seed='',
-        steps=80,
-        cfg_scale=10.0,
+        steps=50,
+        cfg_scale=12.0,
         width=512,
         height=512,
         samples=1,
