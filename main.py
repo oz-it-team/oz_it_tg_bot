@@ -1,5 +1,7 @@
 import os
 import random
+import time
+
 import requests
 import telebot
 import json
@@ -160,12 +162,9 @@ def get_image_response(text):
 
 def get_gigachat_response(text):
     print('try giga ' + text)
-    try:
-        response = giga.chat(text)
-    except AuthenticationError as e:
-        print('auth error')
-        print(e)
-
+    response = giga.chat(text)
+    time.sleep(1)
+    print(response)
     return response.choices[0].message.content
 
 
