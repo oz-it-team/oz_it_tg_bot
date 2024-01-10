@@ -155,9 +155,17 @@ def get_image_response(text):
 
 
 def get_gigachat_response(text):
-    with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
-        response = giga.chat(text)
-        return response.choices[0].message.content
+    print('try giga ' + text)
+    try:
+        with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
+            print('try with ')
+            response = giga.chat(text)
+            print('resp ' + response.choices[0])
+               # return response.choices[0].message.content
+    except:
+        print("Something went wrong when")
+
+    return 'test'
 
 
 def create_payload_for_gigachat(assistant_text, user_text):
