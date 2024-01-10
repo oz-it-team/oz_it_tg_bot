@@ -67,7 +67,7 @@ def send_generated_image_to_bot(message):
 # If message send to private chat
 @bot.message_handler(func=lambda message: message.chat.type == "private")
 def get_private_message(message):
-    bot.send_message(message.chat.id, get_answer(message.text))
+    bot.send_message(message.chat.id, get_gigachat_response(message.text), parse_mode='markdown')
 
 
 # All others message
