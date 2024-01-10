@@ -11,6 +11,7 @@ from stability_sdk import client
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from gigachat import GigaChat
 from gigachat.models import Chat, Messages, MessagesRole
+from gigachat.exceptions import AuthenticationError
 
 # telegram api
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
@@ -159,10 +160,12 @@ def get_image_response(text):
 
 def get_gigachat_response(text):
     print('try giga ' + text)
-    print(giga.token)
-    print(giga.get_models())
-    response = giga.chat(text)
-    print(response)
+    try:
+        response = giga.chat(text)
+    except AuthenticationError as e:
+        print('auth error')
+        print(e)
+
     return response.choices[0].message.content
 
 
