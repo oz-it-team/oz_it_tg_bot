@@ -1,6 +1,6 @@
+import logging
 import os
 import random
-import time
 
 import requests
 import telebot
@@ -18,6 +18,8 @@ from gigachat.models import Chat, Messages, MessagesRole
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 
 giga = GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS")
+
+logging.getLogger().setLevel(logging.DEBUG)
 
 # openai.com service
 openai.api_key = os.environ.get('OPENAI_API_KEY')
