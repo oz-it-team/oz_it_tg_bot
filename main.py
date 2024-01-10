@@ -159,6 +159,8 @@ def get_image_response(text):
 
 def get_gigachat_response(text):
     print('try giga ' + text)
+    print(giga.token)
+    print(giga.get_models())
     response = giga.chat(text)
     print(response)
     return response.choices[0].message.content
