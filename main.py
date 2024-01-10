@@ -182,7 +182,7 @@ def create_payload_for_gigachat(assistant_text, user_text):
 
 
 def get_gigachat_response_with_payload(payload):
-    print('try giga with_payload' + text)
+    print('try giga with_payload')
     with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False,
                   scope="GIGACHAT_API_PERS") as giga:
         response = giga.chat(payload)
