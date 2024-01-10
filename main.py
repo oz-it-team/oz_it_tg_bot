@@ -9,6 +9,8 @@ import warnings
 from PIL import Image
 from stability_sdk import client
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
+from gigachat import GigaChat
+from gigachat.models import Chat, Messages, MessagesRole
 
 #telegram api
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
@@ -55,6 +57,10 @@ def send_generated_image_to_bot(message):
     bot.reply_to(message, "Лови 🎨")
     bot.send_photo(message.chat.id, img)
 
+@bot.message_handler(commands=['gigachat'])
+def send_generated_image_to_bot(message):
+    bot.reply_to(message, get_gigachat_response(' '.join(message.text.split()[1:])), parse_mode='markdown')
+
 
 # If message send to private chat
 @bot.message_handler(func=lambda message: message.chat.type == "private")
@@ -67,9 +73,15 @@ def get_private_message(message):
 def echo(message):
     print(message.text)
     if is_reply_to_bot(message):
-        bot.reply_to(message, get_answer(message.text))
-    elif random.randint(1, 50) == 1:
-        bot.reply_to(message, get_answer(message.text))
+        bot.reply_to(
+            message,
+            get_gigachat_response_with_payload(
+                create_payload_for_gigachat(message.reply_to_message.text, message.text)
+            ),
+            parse_mode='markdown'
+        )
+    elif random.randint(1, 30) == 1:
+        bot.reply_to(message, get_gigachat_response(message.text), parse_mode='markdown')
 
 
 def is_reply_to_bot(message):
@@ -137,6 +149,36 @@ def get_image_response(text):
                 #img.save("image.jpg")
                 
     return img
+
+
+def get_gigachat_response(text):
+    with GigaChat(verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
+        response = giga.chat(text)
+        return response.choices[0].message.content
+
+
+def create_payload_for_gigachat(assistant_text, user_text):
+    return Chat(
+        messages=[
+            Messages(
+                role=MessagesRole.ASSISTANT,
+                content=assistant_text
+            ),
+            Messages(
+                role=MessagesRole.USER,
+                content=user_text
+            )
+        ],
+        temperature=0.7,
+        max_tokens=100,
+    )
+
+
+def get_gigachat_response_with_payload(payload):
+    with GigaChat(verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
+        response = giga.chat(payload)
+        return response.choices[0].message.content
+
 
 # For local testing only
 if __name__ == '__main__':
