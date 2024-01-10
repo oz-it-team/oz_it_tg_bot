@@ -155,7 +155,7 @@ def get_image_response(text):
 
 
 def get_gigachat_response(text):
-    with GigaChat(verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
+    with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
         response = giga.chat(text)
         return response.choices[0].message.content
 
@@ -178,7 +178,7 @@ def create_payload_for_gigachat(assistant_text, user_text):
 
 
 def get_gigachat_response_with_payload(payload):
-    with GigaChat(verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
+    with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
         response = giga.chat(payload)
         return response.choices[0].message.content
 
