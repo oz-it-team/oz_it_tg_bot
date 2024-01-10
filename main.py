@@ -12,17 +12,17 @@ import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from gigachat import GigaChat
 from gigachat.models import Chat, Messages, MessagesRole
 
-#telegram api
+# telegram api
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 
-#openai.com service
+# openai.com service
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
-#stability.ai service
+# stability.ai service
 stability_api = client.StabilityInference(
-    key = os.environ.get('STABILITY_API_KEY'),
-    verbose = True,
-    engine = "stable-diffusion-512-v2-1",
+    key=os.environ.get('STABILITY_API_KEY'),
+    verbose=True,
+    engine="stable-diffusion-512-v2-1",
 )
 
 
@@ -112,6 +112,7 @@ def get_answer(text):
 
     return response[2:len(response) - 2]
 
+
 # generate answer on openai service
 def get_openapi_response(text):
     response = openai.Completion.create(
@@ -122,7 +123,7 @@ def get_openapi_response(text):
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0,
-        #stop=["\n"]
+        # stop=["\n"]
     )
 
     return response.choices[0].text
@@ -149,21 +150,23 @@ def get_image_response(text):
                     "Please modify the prompt and try again.")
             if artifact.type == generation.ARTIFACT_IMAGE:
                 img = Image.open(io.BytesIO(artifact.binary))
-                #img.save("image.jpg")
-                
+                # img.save("image.jpg")
+
     return img
 
 
 def get_gigachat_response(text):
     print('try giga ' + text)
+    print(os.environ.get('GIGACHAT_CREDENTIALS'))
     try:
-        with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
+        with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False,
+                      scope="GIGACHAT_API_PERS") as giga:
             print('try with ')
             response = giga.chat(text)
-            print('resp ' + response.choices[0])
-               # return response.choices[0].message.content
-    except:
-        print("Something went wrong when")
+            print('resp ' + response.choices[0].message.content)
+            # return response.choices[0].message.content
+    except Exception as inst:
+        print(inst)
 
     return 'test'
 
@@ -186,7 +189,8 @@ def create_payload_for_gigachat(assistant_text, user_text):
 
 
 def get_gigachat_response_with_payload(payload):
-    with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS") as giga:
+    with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False,
+                  scope="GIGACHAT_API_PERS") as giga:
         response = giga.chat(payload)
         return response.choices[0].message.content
 
