@@ -15,6 +15,8 @@ from gigachat.models import Chat, Messages, MessagesRole
 # telegram api
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 
+giga = GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS")
+
 # openai.com service
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
@@ -157,11 +159,9 @@ def get_image_response(text):
 
 def get_gigachat_response(text):
     print('try giga ' + text)
-    with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False,
-                  scope="GIGACHAT_API_PERS") as giga:
-        response = giga.chat(text)
-        print('resp ' + response.choices[0].message.content)
-        return response.choices[0].message.content
+    response = giga.chat(text)
+    print(response)
+    return response.choices[0].message.content
 
 
 def create_payload_for_gigachat(assistant_text, user_text):
@@ -183,10 +183,8 @@ def create_payload_for_gigachat(assistant_text, user_text):
 
 def get_gigachat_response_with_payload(payload):
     print('try giga with_payload')
-    with GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False,
-                  scope="GIGACHAT_API_PERS") as giga:
-        response = giga.chat(payload)
-        return response.choices[0].message.content
+    response = giga.chat(payload)
+    return response.choices[0].message.content
 
 
 # For local testing only
