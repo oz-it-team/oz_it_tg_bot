@@ -57,8 +57,10 @@ def send_generated_image_to_bot(message):
     bot.reply_to(message, "Лови 🎨")
     bot.send_photo(message.chat.id, img)
 
+
 @bot.message_handler(commands=['gigachat'])
 def send_generated_image_to_bot(message):
+    print('giga: ' + message.text)
     bot.reply_to(message, get_gigachat_response(' '.join(message.text.split()[1:])), parse_mode='markdown')
 
 
@@ -124,6 +126,7 @@ def get_openapi_response(text):
     )
 
     return response.choices[0].text
+
 
 # generate img on stability.ai service
 def get_image_response(text):
