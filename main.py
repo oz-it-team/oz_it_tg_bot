@@ -73,7 +73,6 @@ def send_generated_image_to_bot(message):
 # If message send to private chat
 @bot.message_handler(func=lambda message: message.chat.type == "private")
 def get_private_message(message):
-    r = get_gigachat_response(message.text)
     bot.send_message(message.chat.id, get_gigachat_response(message.text), parse_mode='markdown')
 
 
@@ -163,11 +162,17 @@ def get_image_response(text):
 
 
 def get_gigachat_response(text):
-    print('try giga ' + text)
-    print(giga.get_models())
-    response = giga.chat(text)
-    print(response)
-    return response.choices[0].message.content
+    with GigaChat(verify_ssl_certs=False) as giga1:
+        print('1')
+        resp = giga1.chat(text)
+        print('2')
+        r = resp.choices[0]
+        return r.message.content
+    #print('try giga ' + text)
+    #print(giga.get_models())
+    #response = giga.chat(text)
+    #print(await response)
+    #return response.choices[0].message.content
 
 
 def create_payload_for_gigachat(assistant_text, user_text):
