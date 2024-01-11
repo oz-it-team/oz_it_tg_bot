@@ -68,7 +68,7 @@ def send_generated_image_to_bot(message):
 
 @bot.message_handler(commands=['yandex'])
 def send_generated_image_to_bot(message):
-    bot.reply_to(message, ask_yandex_gpt(' '.join(message.text.split()[1:])), parse_mode='markdown')
+    bot.reply_to(message, ask_yandex_gpt_rest(' '.join(message.text.split()[1:])), parse_mode='markdown')
 
 
 # If message send to private chat
@@ -86,14 +86,14 @@ def echo(message):
     if is_reply_to_bot(message):
         bot.reply_to(
             message,
-            ask_yandex_gpt(message.text),
+            ask_yandex_gpt_rest(message.text),
             # get_gigachat_response_with_payload(
             #    create_payload_for_gigachat(message.reply_to_message.text, message.text)
             # ),
             parse_mode='markdown'
         )
     elif random.randint(1, 30) == 1:
-        bot.reply_to(message, ask_yandex_gpt(message.text), parse_mode='markdown')
+        bot.reply_to(message, ask_yandex_gpt_rest(message.text), parse_mode='markdown')
 
 
 def is_reply_to_bot(message):
