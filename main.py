@@ -68,15 +68,15 @@ def send_generated_image_to_bot(message):
 
 @bot.message_handler(commands=['yandex'])
 def send_generated_image_to_bot(message):
-    bot.reply_to(message, ask_yandex_gpt_rest(' '.join(message.text.split()[1:])), parse_mode='markdown')
+    bot.reply_to(message, ask_yandex_gpt_rest(create_yandex_gpt_messages(' '.join(message.text.split()[1:]))),
+                 parse_mode='markdown')
 
 
 # If message send to private chat
 @bot.message_handler(func=lambda message: message.chat.type == "private")
 def get_private_message(message):
-    bot.send_message(message.chat.id, ask_yandex_gpt_rest(message.text), parse_mode='markdown')
-    #bot.send_message(message.chat.id, ask_yandex_gpt(message.text), parse_mode='markdown')
-
+    bot.send_message(message.chat.id, ask_yandex_gpt_rest(create_yandex_gpt_messages(message.text)),
+                     parse_mode='markdown')
 
 
 # All others message
@@ -86,14 +86,11 @@ def echo(message):
     if is_reply_to_bot(message):
         bot.reply_to(
             message,
-            ask_yandex_gpt_rest(message.text),
-            # get_gigachat_response_with_payload(
-            #    create_payload_for_gigachat(message.reply_to_message.text, message.text)
-            # ),
+            ask_yandex_gpt_rest(create_yandex_gpt_messages_with_reply(message.reply_to_message.text, message.text)),
             parse_mode='markdown'
         )
     elif random.randint(1, 30) == 1:
-        bot.reply_to(message, ask_yandex_gpt_rest(message.text), parse_mode='markdown')
+        bot.reply_to(message, ask_yandex_gpt_rest(create_yandex_gpt_messages(message.text)), parse_mode='markdown')
 
 
 def is_reply_to_bot(message):
@@ -182,8 +179,7 @@ def get_gpt_system_role() -> list[BaseMessage]:
     ]
 
 
-def ask_yandex_gpt_rest(text):
-    print('Asking yaGpt-rest about:' + text)
+def ask_yandex_gpt_rest(messages):
     url = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion'
     model = 'gpt://' + os.environ.get('YA_FOLDER_ID') + '/yandexgpt-lite'
     data = {
@@ -193,16 +189,7 @@ def ask_yandex_gpt_rest(text):
             "temperature": 0.6,
             "maxTokens": "1000"
         },
-        "messages": [
-            {
-                "role": "system",
-                "text": "Ты лучший ассистент со знанием программирования. Говори от женского имени."
-            },
-            {
-                "role": "user",
-                "text": text
-            }
-        ]
+        "messages": messages
     }
 
     response = requests.post(
@@ -212,10 +199,43 @@ def ask_yandex_gpt_rest(text):
             "Content-Type": "application/json",
             "Authorization": "Api-Key " + os.environ.get('YA_API_KEY'),
             "x-folder-id": os.environ.get('YA_FOLDER_ID')
-            }
+        }
     ).json()
 
     return response['result']['alternatives'][0]['message']['text']
+
+
+def create_yandex_gpt_messages(text):
+    print('Asking yaGpt-rest about:' + text)
+    return [
+        get_yandex_gpt_role(),
+        {
+            "role": "user",
+            "text": text
+        }
+    ]
+
+
+def create_yandex_gpt_messages_with_reply(reply_text, text):
+    print('Asking yaGpt-rest about:' + text)
+    return [
+        get_yandex_gpt_role(),
+        {
+            "role": "assistant",
+            "text": reply_text
+        },
+        {
+            "role": "user",
+            "text": text
+        }
+    ]
+
+
+def get_yandex_gpt_role():
+    return {
+        "role": "system",
+        "text": "Ты лучший ассистент со знанием программирования. Говори от женского имени. Говори всегда честно"
+    }
 
 
 # For local testing only
