@@ -74,7 +74,9 @@ def send_generated_image_to_bot(message):
 # If message send to private chat
 @bot.message_handler(func=lambda message: message.chat.type == "private")
 def get_private_message(message):
-    bot.send_message(message.chat.id, ask_yandex_gpt(message.text), parse_mode='markdown')
+    bot.send_message(message.chat.id, ask_yandex_gpt_rest(message.text), parse_mode='markdown')
+    #bot.send_message(message.chat.id, ask_yandex_gpt(message.text), parse_mode='markdown')
+
 
 
 # All others message
@@ -175,10 +177,45 @@ def ask_yandex_gpt(text):
 def get_gpt_system_role() -> list[BaseMessage]:
     return [
         SystemMessage(
-            content="Ты лучший ии-ассистент со знанием программирования. Говори от женского имени. Ты всегда говоришь "
-                    "правду и пытаешься честно ответить на вопрос."
+            content="Ты лучший ии-ассистент со знанием программирования. Говори от женского имени."
         )
     ]
+
+
+def ask_yandex_gpt_rest(text):
+    print('Asking yaGpt-rest about:' + text)
+    url = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion'
+    model = 'gpt://' + os.environ.get('YA_FOLDER_ID') + '/yandexgpt-lite'
+    data = {
+        "modelUri": model,
+        "completionOptions": {
+            "stream": False,
+            "temperature": 0.6,
+            "maxTokens": "1000"
+        },
+        "messages": [
+            {
+                "role": "system",
+                "text": "Ты лучший ассистент со знанием программирования. Говори от женского имени."
+            },
+            {
+                "role": "user",
+                "text": text
+            }
+        ]
+    }
+
+    response = requests.post(
+        url=url,
+        data=json.dumps(data),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Api-Key " + os.environ.get('YA_API_KEY'),
+            "x-folder-id": os.environ.get('YA_FOLDER_ID')
+            }
+    ).json()
+
+    return response['result']['alternatives'][0]['message']['text']
 
 
 # For local testing only
