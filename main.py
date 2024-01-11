@@ -1,5 +1,6 @@
 import io
 import json
+import logging
 import os
 import random
 import warnings
@@ -19,6 +20,8 @@ bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 
 yandex = ChatYandexGPT(api_key=os.environ.get('YA_API_KEY'), folder_id=os.environ.get('YA_FOLDER_ID'),
                        model='yandexgpt-lite')
+
+logging.getLogger().setLevel(logging.DEBUG)
 
 # openai.com service
 openai.api_key = os.environ.get('OPENAI_API_KEY')
@@ -65,7 +68,6 @@ def send_generated_image_to_bot(message):
 
 @bot.message_handler(commands=['yandex'])
 def send_generated_image_to_bot(message):
-    print('giga: ' + message.text)
     bot.reply_to(message, ask_yandex_gpt(' '.join(message.text.split()[1:])), parse_mode='markdown')
 
 
