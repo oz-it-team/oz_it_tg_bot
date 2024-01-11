@@ -1,4 +1,6 @@
 pyTelegramBotAPI
 openai
 stability-sdk
-gigachat
+yandexcloud
+langchain-core
+langchain-community

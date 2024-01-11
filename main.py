@@ -1,25 +1,24 @@
-import logging
+import io
+import json
 import os
 import random
-
-import requests
-import telebot
-import json
-import openai
-import io
 import warnings
-from PIL import Image
-from stability_sdk import client
+
+import openai
+import requests
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
-from gigachat import GigaChat
-from gigachat.models import Chat, Messages, MessagesRole
+import telebot
+from PIL import Image
+from langchain_community.chat_models import ChatYandexGPT
+from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages.base import BaseMessage
+from stability_sdk import client
 
 # telegram api
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 
-giga = GigaChat(credentials=os.environ.get('GIGACHAT_CREDENTIALS'), verify_ssl_certs=False, scope="GIGACHAT_API_PERS")
-
-logging.getLogger().setLevel(logging.DEBUG)
+yandex = ChatYandexGPT(api_key=os.environ.get('YA_API_KEY'), folder_id=os.environ.get('YA_FOLDER_ID'),
+                       model='yandexgpt-lite')
 
 # openai.com service
 openai.api_key = os.environ.get('OPENAI_API_KEY')
@@ -64,16 +63,16 @@ def send_generated_image_to_bot(message):
     bot.send_photo(message.chat.id, img)
 
 
-@bot.message_handler(commands=['gigachat'])
+@bot.message_handler(commands=['yandex'])
 def send_generated_image_to_bot(message):
     print('giga: ' + message.text)
-    bot.reply_to(message, get_gigachat_response(' '.join(message.text.split()[1:])), parse_mode='markdown')
+    bot.reply_to(message, ask_yandex_gpt(' '.join(message.text.split()[1:])), parse_mode='markdown')
 
 
 # If message send to private chat
 @bot.message_handler(func=lambda message: message.chat.type == "private")
 def get_private_message(message):
-    bot.send_message(message.chat.id, get_gigachat_response(message.text), parse_mode='markdown')
+    bot.send_message(message.chat.id, ask_yandex_gpt(message.text), parse_mode='markdown')
 
 
 # All others message
@@ -83,13 +82,14 @@ def echo(message):
     if is_reply_to_bot(message):
         bot.reply_to(
             message,
-            get_gigachat_response_with_payload(
-                create_payload_for_gigachat(message.reply_to_message.text, message.text)
-            ),
+            ask_yandex_gpt(message.text),
+            # get_gigachat_response_with_payload(
+            #    create_payload_for_gigachat(message.reply_to_message.text, message.text)
+            # ),
             parse_mode='markdown'
         )
     elif random.randint(1, 30) == 1:
-        bot.reply_to(message, get_gigachat_response(message.text), parse_mode='markdown')
+        bot.reply_to(message, ask_yandex_gpt(message.text), parse_mode='markdown')
 
 
 def is_reply_to_bot(message):
@@ -161,41 +161,22 @@ def get_image_response(text):
     return img
 
 
-def get_gigachat_response(text):
-    with GigaChat(verify_ssl_certs=False) as giga1:
-        print('1')
-        resp = giga1.chat(text)
-        print('2')
-        r = resp.choices[0]
-        return r.message.content
-    #print('try giga ' + text)
-    #print(giga.get_models())
-    #response = giga.chat(text)
-    #print(await response)
-    #return response.choices[0].message.content
+def ask_yandex_gpt(text):
+    print('Asking yaGpt about:' + text)
+    messages = get_gpt_system_role()
+    messages.append(HumanMessage(content=text))
+    answer = yandex.invoke(messages)
+    print('Answer yaGpt:' + answer.content)
+    return answer.content
 
 
-def create_payload_for_gigachat(assistant_text, user_text):
-    return Chat(
-        messages=[
-            Messages(
-                role=MessagesRole.ASSISTANT,
-                content=assistant_text
-            ),
-            Messages(
-                role=MessagesRole.USER,
-                content=user_text
-            )
-        ],
-        temperature=0.7,
-        max_tokens=100,
-    )
-
-
-def get_gigachat_response_with_payload(payload):
-    print('try giga with_payload')
-    response = giga.chat(payload)
-    return response.choices[0].message.content
+def get_gpt_system_role() -> list[BaseMessage]:
+    return [
+        SystemMessage(
+            content="Ты лучший ии-ассистент со знанием программирования. Говори от женского имени. Ты всегда говоришь "
+                    "правду и пытаешься честно ответить на вопрос."
+        )
+    ]
 
 
 # For local testing only
