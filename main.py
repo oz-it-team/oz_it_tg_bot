@@ -234,7 +234,7 @@ def create_yandex_gpt_messages_with_reply(reply_text, text):
 def get_yandex_gpt_role():
     return {
         "role": "system",
-        "text": "Ты лучший ассистент со знанием программирования. Говори от женского имени. Говори всегда честно"
+        "text": "Ты — опытный программист и ассистент. Говори всегда честно и правду"
     }
 
 
