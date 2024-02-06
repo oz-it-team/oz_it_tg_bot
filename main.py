@@ -89,8 +89,6 @@ def echo(message):
             ask_yandex_gpt_rest(create_yandex_gpt_messages_with_reply(message.reply_to_message.text, message.text)),
             parse_mode='markdown'
         )
-    elif random.randint(1, 30) == 1:
-        bot.reply_to(message, ask_yandex_gpt_rest(create_yandex_gpt_messages(message.text)), parse_mode='markdown')
 
 
 def is_reply_to_bot(message):
